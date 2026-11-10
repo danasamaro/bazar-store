@@ -2,4 +2,4 @@ __pycache__/
 *.pyc
 .venv/
 data/
-.DS_Store
+.DS_Store.vs/
