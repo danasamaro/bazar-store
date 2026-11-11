@@ -1,1 +1,260 @@
--e "\n===== SERVER LOGS =====" 
+===== CLIENT REQUESTS =====
+
+--- 1. search: distributed systems ---
+GET /search/distributed%20systems  ->  HTTP 200
+[
+  {
+    "id": 1,
+    "title": "How to get a good grade in DOS in 40 minutes a day"
+  },
+  {
+    "id": 2,
+    "title": "RPCs for Noobs"
+  }
+]
+
+--- 2. search: undergraduate school ---
+GET /search/undergraduate%20school  ->  HTTP 200
+[
+  {
+    "id": 3,
+    "title": "Xen and the Art of Surviving Undergraduate School"
+  },
+  {
+    "id": 4,
+    "title": "Cooking for the Impatient Undergrad"
+  }
+]
+
+--- 3. info: book 2 ---
+GET /info/2  ->  HTTP 200
+{
+  "price": 50.0,
+  "quantity": 5,
+  "title": "RPCs for Noobs"
+}
+
+--- 4. info: nonexistent book 99 (expect 404) ---
+GET /info/99  ->  HTTP 404
+{
+  "error": "item not found"
+}
+
+--- 5. purchase: book 2 ---
+POST /purchase/2  ->  HTTP 200
+{
+  "message": "bought book RPCs for Noobs",
+  "success": true
+}
+
+--- 6. info: book 2 after purchase (quantity decreased) ---
+GET /info/2  ->  HTTP 200
+{
+  "price": 50.0,
+  "quantity": 4,
+  "title": "RPCs for Noobs"
+}
+
+===== 7. purchase until out of stock: book 4 =====
+
+--- 7.1 purchase book 4 (attempt 1) ---
+POST /purchase/4  ->  HTTP 200
+{
+  "message": "bought book Cooking for the Impatient Undergrad",
+  "success": true
+}
+
+--- 7.2 purchase book 4 (attempt 2) ---
+POST /purchase/4  ->  HTTP 200
+{
+  "message": "bought book Cooking for the Impatient Undergrad",
+  "success": true
+}
+
+--- 7.3 purchase book 4 (attempt 3) ---
+POST /purchase/4  ->  HTTP 200
+{
+  "message": "bought book Cooking for the Impatient Undergrad",
+  "success": true
+}
+
+--- 7.4 purchase book 4 (attempt 4) ---
+POST /purchase/4  ->  HTTP 200
+{
+  "message": "bought book Cooking for the Impatient Undergrad",
+  "success": true
+}
+
+--- 7.5 purchase book 4 (attempt 5) ---
+POST /purchase/4  ->  HTTP 200
+{
+  "message": "bought book Cooking for the Impatient Undergrad",
+  "success": true
+}
+
+--- 7.6 purchase book 4 (attempt 6) ---
+POST /purchase/4  ->  HTTP 200
+{
+  "message": "bought book Cooking for the Impatient Undergrad",
+  "success": true
+}
+
+--- 7.7 purchase book 4 (attempt 7) ---
+POST /purchase/4  ->  HTTP 200
+{
+  "message": "bought book Cooking for the Impatient Undergrad",
+  "success": true
+}
+
+--- 7.8 purchase book 4 (attempt 8) ---
+POST /purchase/4  ->  HTTP 409
+{
+  "error": "out of stock",
+  "success": false
+}
+
+--- 7.9 purchase book 4 (attempt 9) ---
+POST /purchase/4  ->  HTTP 409
+{
+  "error": "out of stock",
+  "success": false
+}
+
+--- 8. purchase: nonexistent book 99 (expect 404) ---
+POST /purchase/99  ->  HTTP 404
+{
+  "error": "item not found"
+}
+
+===== SERVER LOGS =====
+
+----- FRONTEND LOG -----
+ * Serving Flask app 'app'
+ * Debug mode: off
+2026-11-11 16:31:40,264 [FRONTEND] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.4:5000
+2026-11-11 16:31:40,264 [FRONTEND] [33mPress CTRL+C to quit[0m
+2026-11-11 16:31:57,468 [FRONTEND] search request: topic='distributed systems'
+2026-11-11 16:31:57,483 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "GET /search/distributed%20systems HTTP/1.1" 200 -
+2026-11-11 16:31:57,496 [FRONTEND] search request: topic='undergraduate school'
+2026-11-11 16:31:57,512 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "GET /search/undergraduate%20school HTTP/1.1" 200 -
+2026-11-11 16:31:57,531 [FRONTEND] info request: item=2
+2026-11-11 16:31:57,546 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "GET /info/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,562 [FRONTEND] info request: item=99
+2026-11-11 16:31:57,578 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "[33mGET /info/99 HTTP/1.1[0m" 404 -
+2026-11-11 16:31:57,601 [FRONTEND] purchase request: item=2
+2026-11-11 16:31:57,656 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "POST /purchase/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,668 [FRONTEND] info request: item=2
+2026-11-11 16:31:57,685 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "GET /info/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,711 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:57,767 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,790 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:57,838 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,851 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:57,897 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,920 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:57,973 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,991 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:58,044 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:58] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,056 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:58,109 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:58] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,120 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:58,174 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:58] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,191 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:58,210 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:58] "[31m[1mPOST /purchase/4 HTTP/1.1[0m" 409 -
+2026-11-11 16:31:58,223 [FRONTEND] purchase request: item=4
+2026-11-11 16:31:58,240 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:58] "[31m[1mPOST /purchase/4 HTTP/1.1[0m" 409 -
+2026-11-11 16:31:58,251 [FRONTEND] purchase request: item=99
+2026-11-11 16:31:58,269 [FRONTEND] 172.19.0.1 - - [11/Nov/2026 16:31:58] "[33mPOST /purchase/99 HTTP/1.1[0m" 404 -
+
+
+----- CATALOG LOG -----
+2026-11-11 16:31:39,809 [CATALOG] Database seeded with initial books
+ * Serving Flask app 'app'
+ * Debug mode: off
+2026-11-11 16:31:39,842 [CATALOG] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://172.19.0.2:5001
+2026-11-11 16:31:39,842 [CATALOG] [33mPress CTRL+C to quit[0m
+2026-11-11 16:31:57,481 [CATALOG] search topic='distributed systems' -> 2 result(s)
+2026-11-11 16:31:57,482 [CATALOG] 172.19.0.4 - - [11/Nov/2026 16:31:57] "GET /search/distributed%20systems HTTP/1.1" 200 -
+2026-11-11 16:31:57,510 [CATALOG] search topic='undergraduate school' -> 2 result(s)
+2026-11-11 16:31:57,510 [CATALOG] 172.19.0.4 - - [11/Nov/2026 16:31:57] "GET /search/undergraduate%20school HTTP/1.1" 200 -
+2026-11-11 16:31:57,544 [CATALOG] info id=2 -> 'RPCs for Noobs' qty=5
+2026-11-11 16:31:57,545 [CATALOG] 172.19.0.4 - - [11/Nov/2026 16:31:57] "GET /info/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,577 [CATALOG] info id=99 -> not found
+2026-11-11 16:31:57,577 [CATALOG] 172.19.0.4 - - [11/Nov/2026 16:31:57] "[33mGET /info/99 HTTP/1.1[0m" 404 -
+2026-11-11 16:31:57,620 [CATALOG] info id=2 -> 'RPCs for Noobs' qty=5
+2026-11-11 16:31:57,621 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "GET /info/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,651 [CATALOG] update id=2 body={'quantity_delta': -1} -> qty=4 price=50.00
+2026-11-11 16:31:57,652 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "PUT /update/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,683 [CATALOG] info id=2 -> 'RPCs for Noobs' qty=4
+2026-11-11 16:31:57,683 [CATALOG] 172.19.0.4 - - [11/Nov/2026 16:31:57] "GET /info/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,728 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=7
+2026-11-11 16:31:57,728 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,761 [CATALOG] update id=4 body={'quantity_delta': -1} -> qty=6 price=30.00
+2026-11-11 16:31:57,763 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "PUT /update/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,805 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=6
+2026-11-11 16:31:57,805 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,833 [CATALOG] update id=4 body={'quantity_delta': -1} -> qty=5 price=30.00
+2026-11-11 16:31:57,834 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "PUT /update/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,863 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=5
+2026-11-11 16:31:57,864 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,891 [CATALOG] update id=4 body={'quantity_delta': -1} -> qty=4 price=30.00
+2026-11-11 16:31:57,892 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "PUT /update/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,935 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=4
+2026-11-11 16:31:57,936 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,966 [CATALOG] update id=4 body={'quantity_delta': -1} -> qty=3 price=30.00
+2026-11-11 16:31:57,968 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:57] "PUT /update/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,007 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=3
+2026-11-11 16:31:58,007 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,038 [CATALOG] update id=4 body={'quantity_delta': -1} -> qty=2 price=30.00
+2026-11-11 16:31:58,040 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "PUT /update/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,072 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=2
+2026-11-11 16:31:58,072 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,103 [CATALOG] update id=4 body={'quantity_delta': -1} -> qty=1 price=30.00
+2026-11-11 16:31:58,105 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "PUT /update/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,137 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=1
+2026-11-11 16:31:58,137 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,169 [CATALOG] update id=4 body={'quantity_delta': -1} -> qty=0 price=30.00
+2026-11-11 16:31:58,170 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "PUT /update/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,208 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=0
+2026-11-11 16:31:58,208 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,237 [CATALOG] info id=4 -> 'Cooking for the Impatient Undergrad' qty=0
+2026-11-11 16:31:58,237 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "GET /info/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,266 [CATALOG] info id=99 -> not found
+2026-11-11 16:31:58,266 [CATALOG] 172.19.0.3 - - [11/Nov/2026 16:31:58] "[33mGET /info/99 HTTP/1.1[0m" 404 -
+
+
+----- ORDER LOG -----
+ * Serving Flask app 'app'
+ * Debug mode: off
+2026-11-11 16:31:40,163 [ORDER] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5002
+ * Running on http://172.19.0.3:5002
+2026-11-11 16:31:40,164 [ORDER] [33mPress CTRL+C to quit[0m
+2026-11-11 16:31:57,655 [ORDER] bought book 'RPCs for Noobs'
+2026-11-11 16:31:57,655 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:57] "POST /purchase/2 HTTP/1.1" 200 -
+2026-11-11 16:31:57,766 [ORDER] bought book 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:57,766 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,837 [ORDER] bought book 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:57,837 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,895 [ORDER] bought book 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:57,896 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:57,971 [ORDER] bought book 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:57,972 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:57] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,043 [ORDER] bought book 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:58,043 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:58] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,107 [ORDER] bought book 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:58,108 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:58] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,173 [ORDER] bought book 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:58,173 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:58] "POST /purchase/4 HTTP/1.1" 200 -
+2026-11-11 16:31:58,209 [ORDER] purchase FAILED (out of stock): 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:58,209 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:58] "[31m[1mPOST /purchase/4 HTTP/1.1[0m" 409 -
+2026-11-11 16:31:58,238 [ORDER] purchase FAILED (out of stock): 'Cooking for the Impatient Undergrad'
+2026-11-11 16:31:58,239 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:58] "[31m[1mPOST /purchase/4 HTTP/1.1[0m" 409 -
+2026-11-11 16:31:58,268 [ORDER] 172.19.0.4 - - [11/Nov/2026 16:31:58] "[33mPOST /purchase/99 HTTP/1.1[0m" 404 -
