@@ -1,7 +1,7 @@
 # Bazar.com - A Multi-tier Online Book Store
 
 Lab 1 - Distributed and Operating Systems, Fall 2026
-Author: Your Name
+Author: Dana Samaro
 
 Bazar.com is a tiny online book store built as three Flask microservices
 that communicate over HTTP REST and run in three Docker containers.
